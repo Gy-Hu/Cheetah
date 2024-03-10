@@ -6,6 +6,7 @@ use std::env;
 use clap::{Parser, ValueEnum};
 use libpatron::ir::*;
 use libpatron::*;
+use rayon::prelude::*;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -94,10 +95,24 @@ fn main() {
             solver.name
         );
     }
-    let checker = mc::SmtModelChecker::new(solver, checker_opts);
-    let res = checker.check(&mut ctx, &sys, k_max).unwrap();
+    // let checker = mc::SmtModelChecker::new(solver, checker_opts);
+    // let res = checker.check(&mut ctx, &sys, k_max).unwrap();
+
+    // make a for loop for checking each property
+
+     // Parallelize the checking of each property
+     let bad_states = sys.bad_states();
+     let results: Vec<_> = bad_states.par_iter().enumerate().map(|(_bs_id, (expr_ref, _))| {
+         let mut local_ctx = ctx.clone(); // Clone the context for each thread
+         let local_sys = sys.clone(); // Clone the system for each thread
+         let checker = mc::SmtModelChecker::new(solver, checker_opts);
+         checker.check(&mut local_ctx, &local_sys, k_max, _bs_id)
+     }).collect::<Result<Vec<_>, _>>().unwrap();
 
     let mut results_map = HashMap::new();
+
+    // make all results to one vector
+    let res: Vec<_> = results.into_iter().flat_map(|r| r.into_iter()).collect();
 
     for property_result in res.into_iter() {
         match property_result {

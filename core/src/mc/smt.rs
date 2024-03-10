@@ -2,13 +2,30 @@
 // released under BSD 3-Clause License
 // author: Gary Hu
 
+// apply heuristics to decide whether to unroll the SMT encoding or not
+// 1. check the time sum -> if > 3 hours, give UNSAT and stop
+// 2. check the average time and the bound -> if > 30 minutes and bound > 10, give UNSAT and stop
+// 3. check time sum and bound -> if sum > 2 hours and bound > 10, give UNSAT and stop
+
+/*
+-------> TIME > 2 hours or averag time > 30 minutes -------> bound > 10 -------> UNSAT -------> stop
+                                                    -------> bound < 10 -------> continue --------------> time > 3 hours -------> UNSAT -------> stop
+                                                                                          --------------> time < 3 hours -------> continue 
+1.	If total time > 3 hours, stop with UNSAT.
+2.	Else if average time > 30 minutes and bound > 5, stop with UNSAT. -> at least time > 2.5 hours
+3.	Else if total time > 2 hours and bound > 10, stop with UNSAT. 
+4.	Otherwise, continue.                                                                                    
+*/
+
 use crate::ir::*;
 use crate::mc::{parse_big_uint_from_bit_string, Witness, WitnessArray, WitnessValue};
 use easy_smt as smt;
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
+use core::time;
 use std::borrow::Cow;
 use std::collections::HashSet;
+use std::os::unix::raw::time_t;
 //type annotations needed for `HashSet<T>`
 //use std::collections::HashMap;
 use rayon::prelude::*;
@@ -64,11 +81,32 @@ impl SmtModelChecker {
         Self { solver, opts }
     }
 
+    // heuristic function to determine whether this unrolling is worth it
+    pub fn is_worth_unrolling(
+        time_durations: &Vec<Duration>,
+        k_max: u64,
+        bound: u64,
+    ) -> bool {
+        if time_durations.is_empty() {
+            return true; // Avoid division by zero if the vector is empty
+        }
+
+        let sum_time: u64 = time_durations.iter().map(|t| t.as_secs()).sum();
+        let avg_time: u64 = sum_time / time_durations.len() as u64; // Calculate average based on the sum
+
+        if  (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) {
+            false
+        } else {
+            true
+        }
+    }
+
     pub fn check(
         &self,
         ctx: &mut Context,
         sys: &TransitionSystem,
         k_max: u64,
+        bad_states_id: usize,
     ) -> Result<Vec<PropertyCheckResult>> {
         assert!(k_max > 0 && k_max <= 2000, "unreasonable k_max={}", k_max);
         let replay_file = if self.opts.save_smt_replay {
@@ -106,13 +144,17 @@ impl SmtModelChecker {
         // Start the timer
         let start_time = Instant::now();
         // Define a duration of 3 hours
-        let timeout_duration = Duration::from_secs(3 * 60 * 60);
+        let timeout = Duration::from_secs(3 * 60 * 60);
 
         // Print how many bad states we have
         //println!("Found {} bad states", bad_states.len()); // uncomment to see progress
 
+        // Create a vector to store time durations
+        let mut time_durations: Vec<Duration> = Vec::new();
         
         for k in 0..=k_max {
+            
+            let iteration_start_time = Instant::now();
             // print progress for every step
             //println!("Checking step {}/{}", k, k_max); // uncomment to see progress
             // assume all constraints hold in this step
@@ -136,14 +178,26 @@ impl SmtModelChecker {
                 
                 // check each bad state individually
                 for (_bs_id, (expr_ref, _)) in bad_states.iter().enumerate() {
+                    // only check property that _bs_id equal to bad_states_id, skip others
+                    if _bs_id != bad_states_id {
+                        continue;
+                    }
+
                     // Skip if the property has already been proven SAT
                     if sat_properties.contains(&(_bs_id as usize)) {
                         continue;
                     }
-                    if start_time.elapsed() > timeout_duration {
+
+                    if start_time.elapsed() > timeout {
                         // If it has, mark the result as UNSAT and break the loop
                         results.push(PropertyCheckResult::Unsat(0));
                         //println!("Timeout reached: Marking result as UNSAT and stopping the loop."); // uncomment to see progress
+                        break;
+                    }
+
+                    // if time_durations is not empty, check if it is worth unrolling
+                    if !time_durations.is_empty() && !Self::is_worth_unrolling(&time_durations, k_max, k) {
+                        results.push(PropertyCheckResult::Unsat(0));
                         break;
                     }
         
@@ -200,6 +254,10 @@ impl SmtModelChecker {
 
             // advance
             enc.unroll(ctx, &mut smt_ctx)?;
+
+            // Stop the timer and record the duration
+            let iteration_duration = iteration_start_time.elapsed();
+            time_durations.push(iteration_duration);
         } 
 
         // we have not found any assertion violations

@@ -5,11 +5,11 @@ import subprocess
 # Define the directory where .btor2 files are located
 directory = "/data/guangyuh/coding_env/eda_2_mc/xepic_testcase_for_participant/"
 # Define the log directory
-log_directory = "./log"
+log_directory = "../log"
 # Ensure the log directory exists
 os.makedirs(log_directory, exist_ok=True)
 # Define the command to run
-command = "./mc"
+command = "../core/target/x86_64-unknown-linux-musl/release/examples/bmc"
 
 # Function to run the command for a single file
 def run_command(file_path):
