@@ -11,11 +11,11 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 //type annotations needed for `HashSet<T>`
 //use std::collections::HashMap;
-use rayon::prelude::*;
+//use rayon::prelude::*;
 //use rayon::iter::{IntoParallelIterator, ParallelIterator};
 //use rayon::iter::ParallelIterator;
 use rayon::ThreadPoolBuilder;
-use std::sync::{Arc, Mutex};
+//use std::sync::{Arc, Mutex};
 use crossbeam::scope;
 use crossbeam::channel::{unbounded, Receiver, Sender};
 use std::time::{Duration, Instant};
@@ -52,6 +52,7 @@ pub struct SmtModelCheckerOptions {
     pub save_smt_replay: bool,
 }
 
+#[derive(Clone)]
 pub struct SmtModelChecker {
     solver: SmtSolverCmd,
     opts: SmtModelCheckerOptions,
@@ -59,17 +60,104 @@ pub struct SmtModelChecker {
 
 type Result<T> = std::io::Result<T>;
 
+// make a struct for store _bs_id, (expr_ref, _) for parallel version
+pub struct BadState {
+    bs_id: usize, 
+    expr_ref: ExprRef, 
+}
+
 impl SmtModelChecker {
     pub fn new(solver: SmtSolverCmd, opts: SmtModelCheckerOptions) -> Self {
         Self { solver, opts }
     }
+
+    // multi-processing version of check
+    pub fn check_parallel(
+        &self,
+        ctx: &mut Context,
+        sys: &TransitionSystem,
+        k_max: u64,
+        num_threads: u32,
+    ) -> Result<Vec<PropertyCheckResult>> {
+        // Create a thread pool with a specific number of threads
+        let pool = ThreadPoolBuilder::new()
+        .num_threads(num_threads as usize)
+        .build()
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+        let (sender, receiver): (Sender<PropertyCheckResult>, Receiver<PropertyCheckResult>) = unbounded();
+        let bad_states = sys.bad_states();
+        // featch a list from bad_states.iter().enumerate() 
+        let bad_states_list = bad_states.iter().enumerate().collect::<Vec<_>>();
+        // Scope to contain thread spawning
+        scope(|s| {
+            // for each property in bad_states_list, spawn a thread to check it
+            for (property_id, (expr_ref, _)) in bad_states_list.iter() {
+                let sender_clone = sender.clone();
+                let mut ctx_clone = ctx.clone();
+                let sys_clone = sys.clone();
+                let checker_clone = self.clone();
+                // make a struct for store _bs_id, (expr_ref, _) for parallel version
+                let bad_state = BadState {
+                    bs_id: *property_id,
+                    expr_ref: *expr_ref,
+                };
+
+                let mut enc = UnrollSmtEncoding::new(&mut ctx_clone, &sys_clone, false);
+
+                // Spawn threads within the scope
+                s.spawn(move |_| {
+                    let result = checker_clone.check(&mut ctx_clone, &sys_clone, k_max, Some(bad_state), &mut enc);
+                    match result {
+                        Ok(res) => {
+                            for r in res {
+                                sender_clone.send(r).expect("Could not send result");
+                            }
+                        }
+                        Err(err) => {
+                            // Handle error, e.g., by logging or sending an error result
+                        }
+                    }
+                });
+            }
+        }).expect("Scope error");
+
+        // Drop the sender so the receiver can finish
+        drop(sender);
+
+        // Collect results with a timeout
+        let timeout = Duration::from_secs(10);
+        let start_time = Instant::now();
+        let mut results = Vec::new();
+
+        // Receive results until the timeout is reached
+        while start_time.elapsed() < timeout {
+            match receiver.recv_timeout(timeout - start_time.elapsed()) {
+                Ok(result) => results.push(result),
+                Err(e) => {
+                    if e == crossbeam::channel::RecvTimeoutError::Timeout {
+                        break; // Timeout reached
+                    } else {
+                        // Handle other errors, e.g., by logging
+                    }
+                }
+            }
+        }
+
+        // Return all the results received within the timeout
+        Ok(results)
+    }
+
 
     pub fn check(
         &self,
         ctx: &mut Context,
         sys: &TransitionSystem,
         k_max: u64,
+        // add stuct badstate for parallel version
+        bad_state: Option<BadState>,
+        enc: &mut UnrollSmtEncoding,
     ) -> Result<Vec<PropertyCheckResult>> {
+        println!("Checking property {}...", bad_state.as_ref().unwrap().bs_id);
         assert!(k_max > 0 && k_max <= 2000, "unreasonable k_max={}", k_max);
         let replay_file = if self.opts.save_smt_replay {
             Some(std::fs::File::create("replay.smt")?)
@@ -92,7 +180,7 @@ impl SmtModelChecker {
         smt_ctx.set_logic(logic)?;
 
         // TODO: maybe add support for the more compact SMT encoding
-        let mut enc = UnrollSmtEncoding::new(ctx, sys, false);
+        //let mut enc = UnrollSmtEncoding::new(ctx, sys, false);
         enc.define_header(&mut smt_ctx)?;
         enc.init_at(ctx, &mut smt_ctx, 0)?;
 
@@ -115,6 +203,7 @@ impl SmtModelChecker {
         for k in 0..=k_max {
             // print progress for every step
             //println!("Checking step {}/{}", k, k_max); // uncomment to see progress
+            
             // assume all constraints hold in this step
             for (expr_ref, _) in constraints.iter() {
                 let expr = enc.get_at(ctx, &mut smt_ctx, *expr_ref, k);
@@ -135,22 +224,26 @@ impl SmtModelChecker {
             if self.opts.check_bad_states_individually {
                 
                 // check each bad state individually
-                for (_bs_id, (expr_ref, _)) in bad_states.iter().enumerate() {
+                //for (_bs_id, (expr_ref, _)) in bad_states.iter().enumerate() {
+                    {
+                    let bad_state = bad_state.as_ref().unwrap();
+                    let _bs_id = bad_state.bs_id;
+                    let expr_ref = bad_state.expr_ref;
                     // Skip if the property has already been proven SAT
                     if sat_properties.contains(&(_bs_id as usize)) {
                         continue;
                     }
-                    if start_time.elapsed() > timeout_duration {
-                        // If it has, mark the result as UNSAT and break the loop
-                        results.push(PropertyCheckResult::Unsat(0));
-                        //println!("Timeout reached: Marking result as UNSAT and stopping the loop."); // uncomment to see progress
-                        break;
-                    }
+                    // if start_time.elapsed() > timeout_duration {
+                    //     // If it has, mark the result as UNSAT and break the loop
+                    //     results.push(PropertyCheckResult::Unsat(0));
+                    //     //println!("Timeout reached: Marking result as UNSAT and stopping the loop."); // uncomment to see progress
+                    //     break;
+                    // }
         
                     //print the id of the bad state we are checking
                     //print!("Checking bad state {}\r", _bs_id);
                     //println!("Checking bad state {}", _bs_id); // uncomment to see progress
-                    let expr = enc.get_at(ctx, &mut smt_ctx, *expr_ref, k);
+                    let expr = enc.get_at(ctx, &mut smt_ctx, expr_ref, k);
                     let res = check_assuming(&mut smt_ctx, expr, &self.solver)?;
 
                     // count expression uses
@@ -450,6 +543,7 @@ pub trait TransitionSystemEncoding {
     ) -> smt::SExpr;
 }
 
+#[derive(Clone)]
 pub struct UnrollSmtEncoding {
     /// the offset at which our encoding was initialized
     offset: Option<u64>,
@@ -538,6 +632,8 @@ impl UnrollSmtEncoding {
         let offset = None;
         let states = sys.states.clone();
 
+        println!("The current step is: {}", current_step.unwrap_or(0));
+
         Self {
             offset,
             current_step,
@@ -546,6 +642,7 @@ impl UnrollSmtEncoding {
             states,
             symbols_at: Vec::new(),
         }
+        
     }
 
     fn define_signals(
@@ -641,6 +738,7 @@ impl TransitionSystemEncoding for UnrollSmtEncoding {
         self.symbols_at.clear();
         // remember current step and starting offset
         self.current_step = Some(step);
+        println!("Initializing step: {}", step);
         self.offset = Some(step);
         self.create_signal_symbols_in_step(ctx, step);
 
@@ -731,6 +829,7 @@ impl TransitionSystemEncoding for UnrollSmtEncoding {
         expr: ExprRef,
         step: u64,
     ) -> smt::SExpr {
+        //println!("current step: {}, step: {}", self.current_step.unwrap_or(0), step);
         assert!(step <= self.current_step.unwrap_or(0));
         let sym = self.signal_sym_in_step(expr, step).unwrap();
         convert_expr(smt_ctx, ctx, sym, &|_| None)

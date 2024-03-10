@@ -9,6 +9,11 @@ use libpatron::*;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
+use rayon::ThreadPoolBuilder;
+use std::time::{Duration, Instant};
+
+
+
 
 #[derive(Hash, Eq, PartialEq, Debug)]
 struct PropertyResult {
@@ -70,6 +75,16 @@ fn main() {
     let new_paths = env::join_paths(paths).expect("Failed to join paths");
     env::set_var("PATH", &new_paths);
 
+    // Inside the `main` function, before starting the checks, initialize the thread pool
+    let thread_pool = ThreadPoolBuilder::new()
+    .num_threads(16) // Set the maximum number of threads in the pool
+    .build()
+    .expect("Failed to build thread pool");
+
+    // Inside the `main` function, replace the loop that checks each bad state with the following:
+    let start_time = Instant::now(); // Record the start time
+    let timeout_duration = Duration::from_secs(300); // Set the timeout duration
+
     let args = Args::parse();
     let (mut ctx, sys) = btor2::parse_file(&args.filename).expect("Failed to load btor2 file!");
     if args.verbose {
@@ -95,7 +110,8 @@ fn main() {
         );
     }
     let checker = mc::SmtModelChecker::new(solver, checker_opts);
-    let res = checker.check(&mut ctx, &sys, k_max).unwrap();
+    //let res = checker.check(&mut ctx, &sys, k_max).unwrap();
+    let res = checker.check_parallel(&mut ctx, &sys, k_max, 32).unwrap();
 
     let mut results_map = HashMap::new();
 
