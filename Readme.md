@@ -2,7 +2,7 @@
 
 ## Algorithm Overview
 
-This model checker is mainly based on Bounded Model Checking (BMC) algorithm. The algorithm is based on the following steps:
+This model checker is mainly based on Bounded Model Checking (BMC) algorithm (you can check the original paper [here](https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf). The algorithm is based on the following steps:
 
 1. Initialize the model with initial values for all variables.
 2. Unroll the transition relation for a fixed number of steps.
@@ -25,7 +25,7 @@ Now, you can run the engine by executing the following command:
 
 ## Prerequisites
 
-1. Bitwuzla SMT solver - https://bitwuzla.github.io/
+1. Bitwuzla SMT solver - https://bitwuzla.github.io/ (put the binary in the `core` directory)
 2. Rust environment (For rust dependencies, see [Cargo.toml](core/Cargo.toml))
 
 ## Acknowledgments
@@ -42,4 +42,4 @@ This project is licensed under the BSD 3-Clause License - see the [LICENSE.md](c
 
 ## Authors
 
-- **Gary Hu** - *Initial work on the new version*
+- **Gary Hu** - *Extend patron to Cheetah, support multiple properties*
