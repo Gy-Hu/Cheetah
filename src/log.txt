@@ -1,0 +1,582 @@
+Found 17 bad states
+Checking step 0/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 1/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 2/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 3/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 4/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 5/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 6/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 7/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 8/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 9/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 10/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 11/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 12/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 13/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 14/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 15/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 16/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 17/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 18/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 19/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Checking step 20/20
+Checking bad state 0
+Checking bad state 1
+Checking bad state 2
+Checking bad state 3
+Checking bad state 4
+Checking bad state 5
+Checking bad state 6
+Checking bad state 7
+Checking bad state 8
+Checking bad state 9
+Checking bad state 10
+Checking bad state 11
+Checking bad state 12
+Checking bad state 13
+Checking bad state 14
+Checking bad state 15
+Checking bad state 16
+Property 0: unsat
+Property 1: unsat
+Property 2: unsat
+Property 3: unsat
+Property 4: unsat
+Property 5: unsat
+Property 6: unsat
+Property 7: unsat
+Property 8: unsat
+Property 9: unsat
+Property 10: unsat
+Property 11: unsat
+Property 12: unsat
+Property 13: unsat
+Property 14: unsat
+Property 15: unsat
+Property 16: unsat
+Property 17: unsat
+Property 18: unsat
+Property 19: unsat
+Property 20: unsat
+Property 21: unsat
+Property 22: unsat
+Property 23: unsat
+Property 24: unsat
+Property 25: unsat
+Property 26: unsat
+Property 27: unsat
+Property 28: unsat
+Property 29: unsat
+Property 30: unsat
+Property 31: unsat
+Property 32: unsat
+Property 33: unsat
+Property 34: unsat
+Property 35: unsat
+Property 36: unsat
+Property 37: unsat
+Property 38: unsat
+Property 39: unsat
+Property 40: unsat
+Property 41: unsat
+Property 42: unsat
+Property 43: unsat
+Property 44: unsat
+Property 45: unsat
+Property 46: unsat
+Property 47: unsat
+Property 48: unsat
+Property 49: unsat
+Property 50: unsat
+Property 51: unsat
+Property 52: unsat
+Property 53: unsat
+Property 54: unsat
+Property 55: unsat
+Property 56: unsat
+Property 57: unsat
+Property 58: unsat
+Property 59: unsat
+Property 60: unsat
+Property 61: unsat
+Property 62: unsat
+Property 63: unsat
+Property 64: unsat
+Property 65: unsat
+Property 66: unsat
+Property 67: unsat
+Property 68: unsat
+Property 69: unsat
+Property 70: unsat
+Property 71: unsat
+Property 72: unsat
+Property 73: unsat
+Property 74: unsat
+Property 75: unsat
+Property 76: unsat
+Property 77: unsat
+Property 78: unsat
+Property 79: unsat
+Property 80: unsat
+Property 81: unsat
+Property 82: unsat
+Property 83: unsat
+Property 84: unsat
+Property 85: unsat
+Property 86: unsat
+Property 87: unsat
+Property 88: unsat
+Property 89: unsat
+Property 90: unsat
+Property 91: unsat
+Property 92: unsat
+Property 93: unsat
+Property 94: unsat
+Property 95: unsat
+Property 96: unsat
+Property 97: unsat
+Property 98: unsat
+Property 99: unsat
+Property 100: unsat
+Property 101: unsat
+Property 102: unsat
+Property 103: unsat
+Property 104: unsat
+Property 105: unsat
+Property 106: unsat
+Property 107: unsat
+Property 108: unsat
+Property 109: unsat
+Property 110: unsat
+Property 111: unsat
+Property 112: unsat
+Property 113: unsat
+Property 114: unsat
+Property 115: unsat
+Property 116: unsat
+Property 117: unsat
+Property 118: unsat
+Property 119: unsat
+Property 120: unsat
+Property 121: unsat
+Property 122: unsat
+Property 123: unsat
+Property 124: unsat
+Property 125: unsat
+Property 126: unsat
+Property 127: unsat
+Property 128: unsat
+Property 129: unsat
+Property 130: unsat
+Property 131: unsat
+Property 132: unsat
+Property 133: unsat
+Property 134: unsat
+Property 135: unsat
+Property 136: unsat
+Property 137: unsat
+Property 138: unsat
+Property 139: unsat
+Property 140: unsat
+Property 141: unsat
+Property 142: unsat
+Property 143: unsat
+Property 144: unsat
+Property 145: unsat
+Property 146: unsat
+Property 147: unsat
+Property 148: unsat
+Property 149: unsat
+Property 150: unsat
+Property 151: unsat
+Property 152: unsat
+Property 153: unsat
+Property 154: unsat
+Property 155: unsat
+Property 156: unsat
+Property 157: unsat
+Property 158: unsat
+Property 159: unsat
+Property 160: unsat
+Property 161: unsat
+Property 162: unsat
+Property 163: unsat
+Property 164: unsat
+Property 165: unsat
+Property 166: unsat
+Property 167: unsat
+Property 168: unsat
+Property 169: unsat
+Property 170: unsat
+Property 171: unsat
+Property 172: sat
+Property 327: unsat
+Property 328: unsat
+Property 329: unsat
+Property 330: unsat
+Property 331: unsat
+Property 332: unsat
+Property 333: unsat
+Property 334: unsat
+Property 335: unsat
+Property 336: unsat
+Property 337: unsat
+Property 338: unsat
+Property 339: unsat
+Property 340: unsat
+Property 341: unsat
+Property 342: unsat
+Property 343: unsat
+Property 344: unsat
+Property 345: unsat
+Property 346: unsat
+Property 347: unsat
+Property 348: unsat
+Property 349: unsat
+Property 350: unsat
+Property 351: unsat
+Property 352: unsat
+Property 353: unsat
+Property 354: unsat
+Property 355: unsat
+Property 356: unsat

@@ -1,0 +1,39 @@
+[package]
+name = "libpatron"
+version = "0.16.0"
+edition = "2021"
+description = "Hardware bug-finding toolkit."
+readme = "Readme.md"
+license = "BSD-3-Clause"
+keywords = ["RTL", "btor", "model-checking", "SMT", "bit-vector"]
+exclude = [".github/", ".gitignore"]
+
+[target.x86_64-unknown-linux-musl]
+rustflags = ["-C", "target-feature=-crt-static"]
+
+[dependencies]
+crossbeam = "0.8.1"
+rayon = "1.5.1"
+string-interner = "0.14.0"
+indexmap = "2.0.0"
+codespan-reporting = "0.11.1"
+fuzzy-matcher = "0.3.7"
+lazy_static = "1.4.0"
+easy-smt = "0.2.1"
+num-bigint = "0.4.4"
+num-traits = "0.2.17"
+num-integer = "0.1.45"
+# used for simulator initialization
+rand = { version = "0.8.5", default-features = false }
+rand_xoshiro = "0.6.0"
+smallvec = "1.11.2"
+
+[dev-dependencies]
+clap =  { version = "4.4.8", features = ["derive"] }
+insta = { version = "1.34.0", features = ["yaml"] }
+
+[profile.dev.package]
+insta.opt-level = 3
+
+[profile.release]
+debug = true

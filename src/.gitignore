@@ -1,0 +1,8 @@
+/target
+/Cargo.lock
+/.idea/
+/*.smt
+/*.wit
+/flamegraph.svg
+/perf.data
+/perf.data.old
