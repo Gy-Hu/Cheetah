@@ -118,7 +118,10 @@ impl SmtModelChecker {
 
         if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) {
             true
-        } else {
+        } else if (avg_time < 1 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 100){
+            true
+        }
+        else {
             false
         }
     }
@@ -284,7 +287,7 @@ impl SmtModelChecker {
 
             // Condition to check for increasing k_max
             if Self::is_worth_extending(&time_durations, k_max, k) {
-                k_max += 10;
+                k_max += 30;
             }
 
             // Break the loop if k has reached the updated k_max
