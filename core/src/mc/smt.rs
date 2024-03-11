@@ -82,7 +82,7 @@ impl SmtModelChecker {
     }
 
     // heuristic function to determine whether this unrolling is worth it
-    pub fn is_worth_unrolling(
+    pub fn is_worth_unrolling(// make hard-checking property stop early
         time_durations: &Vec<Duration>,
         k_max: u64,
         bound: u64,
@@ -102,7 +102,7 @@ impl SmtModelChecker {
     }
 
     // heuristic function for determining whether to extend the k-max
-    pub fn is_worth_extending(
+    pub fn is_worth_extending(// make easy-checking property run longer bound
         time_durations: &Vec<Duration>,
         k_max: u64,
         bound: u64,
@@ -118,7 +118,7 @@ impl SmtModelChecker {
 
         if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) {
             true
-        } else if (avg_time < 1 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 100){
+        } else if (avg_time < 2 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 200){
             true
         }
         else {
