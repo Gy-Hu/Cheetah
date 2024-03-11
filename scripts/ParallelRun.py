@@ -9,7 +9,7 @@ log_directory = "../log"
 # Ensure the log directory exists
 os.makedirs(log_directory, exist_ok=True)
 # Define the command to run
-command = "../core/target/x86_64-unknown-linux-musl/release/examples/bmc"
+command = "../core/target/x86_64-unknown-linux-musl/release/examples/cheetah"
 
 # Function to run the command for a single file
 def run_command(file_path):

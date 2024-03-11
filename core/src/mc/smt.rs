@@ -101,11 +101,33 @@ impl SmtModelChecker {
         }
     }
 
+    // heuristic function for determining whether to extend the k-max
+    pub fn is_worth_extending(
+        time_durations: &Vec<Duration>,
+        k_max: u64,
+        bound: u64,
+    ) -> bool {
+        if time_durations.is_empty() {
+            return false; // Avoid division by zero if the vector is empty
+        }
+
+        let sum_time: u64 = time_durations.iter().map(|t| t.as_secs()).sum();
+        let avg_time: u64 = sum_time / time_durations.len() as u64; // Calculate average based on the sum
+
+        // average run time < 10 minutes, time sum < 2 hours, bound is > 2/3 k_max, and bound < 20, extend k_max
+
+        if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) {
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn check(
         &self,
         ctx: &mut Context,
         sys: &TransitionSystem,
-        k_max: u64,
+        mut k_max: u64,
         bad_states_id: usize,
     ) -> Result<Vec<PropertyCheckResult>> {
         assert!(k_max > 0 && k_max <= 2000, "unreasonable k_max={}", k_max);
@@ -152,7 +174,8 @@ impl SmtModelChecker {
         // Create a vector to store time durations
         let mut time_durations: Vec<Duration> = Vec::new();
         
-        for k in 0..=k_max {
+        for k in 0..{
+
             
             let iteration_start_time = Instant::now();
             // print progress for every step
@@ -258,6 +281,17 @@ impl SmtModelChecker {
             // Stop the timer and record the duration
             let iteration_duration = iteration_start_time.elapsed();
             time_durations.push(iteration_duration);
+
+            // Condition to check for increasing k_max
+            if Self::is_worth_extending(&time_durations, k_max, k) {
+                k_max += 10;
+            }
+
+            // Break the loop if k has reached the updated k_max
+            if k >= k_max {
+                break;
+            }
+
         } 
 
         // we have not found any assertion violations
