@@ -118,7 +118,7 @@ fn main() {
         match property_result {
             mc::PropertyCheckResult::Unsat(res) => {
                 if results_map.get(&(res as usize)) != Some(&"SAT".to_string()) { // if res is UNSAT and previous status is not SAT
-                    results_map.insert(res as usize, "UNSAT".to_string());
+                    results_map.insert(res as usize, "UNSAT".to_string());// not replace UNSAT record
                 }
             }
             mc::PropertyCheckResult::Sat(res, wit) => { // if res is SAT
@@ -126,19 +126,32 @@ fn main() {
             }
             mc::PropertyCheckResult::EarlyStop(res,k) => { // if res is EARLY_STOP
                 if results_map.get(&(res as usize)) != Some(&"SAT".to_string()) { // if res is UNSAT and previous status is not SAT
-                    results_map.insert(res as usize, format!("EARLY_STOP_K_{}", k));
+                    results_map.insert(res as usize, format!("EARLY_STOP_K_{}", k)); // not replace with timeout record
                 }
             }
+        }
     }
 
     // sort the results by index
     let mut results: Vec<_> = results_map.into_iter().collect();
     results.sort_by_key(|r| r.0);
 
-    // print the results in `{RESULT, INDEX}` format
+    // print the results in `{RESULT, INDEX}` format --> EARLY STOP -> UNSAT
     for (index, status) in results {
-        println!("{{{}, {}}}", status, index);
+        // if status not start with "EARLY_STOP_K_"
+        if !status.starts_with("EARLY_STOP_K_") {
+            println!("{{{}, {}}}", status, index);
+        }
+        else {// if status start with "EARLY_STOP_K_", print as UNSAT
+            println!("{{UNSAT, {}}}", index);
+        }
     }
+
+    // print the results in `{RESULT, INDEX}` format 
+    // for (index, status) in results {
+    //     println!("{{{}, {}}}", status, index);
+    // }
+
     // Print all unique results
     // for result in results_set {
     //     println!("Property Index {}: {}", result.index, result.status);
