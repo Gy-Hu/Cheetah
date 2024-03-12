@@ -84,7 +84,7 @@ impl SmtModelChecker {
     // heuristic function to determine whether this unrolling is worth it
     pub fn is_worth_unrolling(// make hard-checking property stop early
         time_durations: &Vec<Duration>,
-        k_max: u64,
+        //k_max: u64,
         bound: u64,
     ) -> bool {
         if time_durations.is_empty() {
@@ -150,7 +150,8 @@ impl SmtModelChecker {
         } else if self.solver.supports_uf {
             "QF_AUFBV"
         } else {
-            "QF_ABV"
+            // TODO: Figure out the difference between QF_ABV and QF_BV + with different tactics
+            "QF_ABV" 
         };
         smt_ctx.set_logic(logic)?;
 
@@ -177,9 +178,10 @@ impl SmtModelChecker {
         // Create a vector to store time durations
         let mut time_durations: Vec<Duration> = Vec::new();
         
-        for k in 0..{
-
-            
+        // make a u64 k
+        let mut k: u64 = 0;
+        loop {
+            println!("Checking bound {}", k); // uncomment to see progress
             let iteration_start_time = Instant::now();
             // print progress for every step
             //println!("Checking step {}/{}", k, k_max); // uncomment to see progress
@@ -223,7 +225,8 @@ impl SmtModelChecker {
                     }
 
                     // if time_durations is not empty, check if it is worth unrolling
-                    if !time_durations.is_empty() && !Self::is_worth_unrolling(&time_durations, k_max, k) {
+                    //if !time_durations.is_empty() && !Self::is_worth_unrolling(&time_durations, k_max, k) {
+                    if !time_durations.is_empty() && !Self::is_worth_unrolling(&time_durations, k) {
                         //results.push(PropertyCheckResult::Unsat(_bs_id as u32));
                         results.push(PropertyCheckResult::EarlyStop(_bs_id as u32, k as u64));
                         break;
@@ -297,6 +300,7 @@ impl SmtModelChecker {
                 break;
             }
 
+            k += 1;
         } 
 
         // we have not found any assertion violations

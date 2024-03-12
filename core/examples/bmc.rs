@@ -136,10 +136,22 @@ fn main() {
     let mut results: Vec<_> = results_map.into_iter().collect();
     results.sort_by_key(|r| r.0);
 
+    // print the results in `{RESULT, INDEX}` format --> EARLY STOP -> UNSAT
+    // for (index, status) in results {
+    //     // if status not start with "EARLY_STOP_K_"
+    //     if !status.starts_with("EARLY_STOP_K_") {
+    //         println!("{{{}, {}}}", status, index);
+    //     }
+    //     else {// if status start with "EARLY_STOP_K_", print as UNSAT
+    //         println!("{{UNSAT, {}}}", index);
+    //     }
+    // }
+
     // print the results in `{RESULT, INDEX}` format
     for (index, status) in results {
         println!("{{{}, {}}}", status, index);
     }
+
     // Print all unique results
     // for result in results_set {
     //     println!("Property Index {}: {}", result.index, result.status);
