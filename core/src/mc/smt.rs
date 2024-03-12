@@ -177,11 +177,15 @@ impl SmtModelChecker {
 
         // Create a vector to store time durations
         let mut time_durations: Vec<Duration> = Vec::new();
+
+        // mark time consumptions for make sure the constraints are not contradictory
+        let mut time_consumptions_assert_constraints_contradictory: Vec<Duration> = Vec::new();
         
         // make a u64 k
         let mut k: u64 = 0;
         'unroll_main: loop { // loop for unroll
-            println!("Checking bound {}", k); // uncomment to see progress
+            // checking progress and time consumptions for constriants checking 
+            println!("Checking bound {}, {} seconds in constriants contradictory checking, {} seconds in total", k, time_consumptions_assert_constraints_contradictory.iter().map(|t| t.as_secs()).sum::<u64>(), start_time.elapsed().as_secs());
             let iteration_start_time = Instant::now();
             // print progress for every step
             //println!("Checking step {}/{}", k, k_max); // uncomment to see progress
@@ -192,6 +196,7 @@ impl SmtModelChecker {
             }
 
             // make sure the constraints are not contradictory
+            let constranits_check_start_time = Instant::now();
             if self.opts.check_constraints {
                 let res = smt_ctx.check()?;
                 assert_eq!(
@@ -201,6 +206,8 @@ impl SmtModelChecker {
                     k
                 );
             }
+            let constranits_check_duration = constranits_check_start_time.elapsed();
+            time_consumptions_assert_constraints_contradictory.push(constranits_check_duration);
 
             if self.opts.check_bad_states_individually { //loop for properties checking
                 
@@ -300,7 +307,7 @@ impl SmtModelChecker {
 
             // Break the loop if k has reached the updated k_max
             if k >= k_max {
-                break;
+                break 'unroll_main;
             }
 
             k += 1;
