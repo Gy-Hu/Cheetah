@@ -180,7 +180,7 @@ impl SmtModelChecker {
         
         // make a u64 k
         let mut k: u64 = 0;
-        loop {
+        'unroll_main: loop { // loop for unroll
             println!("Checking bound {}", k); // uncomment to see progress
             let iteration_start_time = Instant::now();
             // print progress for every step
@@ -202,7 +202,7 @@ impl SmtModelChecker {
                 );
             }
 
-            if self.opts.check_bad_states_individually {
+            if self.opts.check_bad_states_individually { //loop for properties checking
                 
                 // check each bad state individually
                 for (_bs_id, (expr_ref, _)) in bad_states.iter().enumerate() {
@@ -213,7 +213,8 @@ impl SmtModelChecker {
 
                     // Skip if the property has already been proven SAT
                     if sat_properties.contains(&(_bs_id as usize)) {
-                        continue;
+                        //continue;
+                        break 'unroll_main;
                     }
 
                     if start_time.elapsed() > timeout {
@@ -221,7 +222,8 @@ impl SmtModelChecker {
                         //results.push(PropertyCheckResult::Unsat(_bs_id as u32));
                         results.push(PropertyCheckResult::EarlyStop(_bs_id as u32, k as u64));
                         //println!("Timeout reached: Marking result as UNSAT and stopping the loop."); // uncomment to see progress
-                        break;
+                        //break;
+                        break 'unroll_main;
                     }
 
                     // if time_durations is not empty, check if it is worth unrolling
@@ -229,7 +231,8 @@ impl SmtModelChecker {
                     if !time_durations.is_empty() && !Self::is_worth_unrolling(&time_durations, k) {
                         //results.push(PropertyCheckResult::Unsat(_bs_id as u32));
                         results.push(PropertyCheckResult::EarlyStop(_bs_id as u32, k as u64));
-                        break;
+                        //break;
+                        break 'unroll_main;
                     }
         
                     //print the id of the bad state we are checking
