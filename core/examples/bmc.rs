@@ -124,6 +124,11 @@ fn main() {
             mc::PropertyCheckResult::Sat(res, wit) => { // if res is SAT
                 results_map.insert(res as usize, "SAT".to_string());
             }
+            mc::PropertyCheckResult::EarlyStop(res,k) => { // if res is EARLY_STOP
+                if results_map.get(&(res as usize)) != Some(&"SAT".to_string()) { // if res is UNSAT and previous status is not SAT
+                    results_map.insert(res as usize, format!("EARLY_STOP_K_{}", k));
+                }
+            }
         }
     }
 

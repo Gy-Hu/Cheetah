@@ -216,14 +216,16 @@ impl SmtModelChecker {
 
                     if start_time.elapsed() > timeout {
                         // If it has, mark the result as UNSAT and break the loop
-                        results.push(PropertyCheckResult::Unsat(0));
+                        //results.push(PropertyCheckResult::Unsat(_bs_id as u32));
+                        results.push(PropertyCheckResult::EarlyStop(_bs_id as u32, k as u64));
                         //println!("Timeout reached: Marking result as UNSAT and stopping the loop."); // uncomment to see progress
                         break;
                     }
 
                     // if time_durations is not empty, check if it is worth unrolling
                     if !time_durations.is_empty() && !Self::is_worth_unrolling(&time_durations, k_max, k) {
-                        results.push(PropertyCheckResult::Unsat(0));
+                        //results.push(PropertyCheckResult::Unsat(_bs_id as u32));
+                        results.push(PropertyCheckResult::EarlyStop(_bs_id as u32, k as u64));
                         break;
                     }
         
@@ -524,6 +526,7 @@ fn smt_bit_vec_str_to_value(a: &str) -> (BigUint, WidthInt) {
 pub enum PropertyCheckResult {
     Unsat(u32),
     Sat(u32, Witness),
+    EarlyStop(u32, u64),
 }
 
 pub enum ModelCheckResult {
