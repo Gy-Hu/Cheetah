@@ -1,6 +1,7 @@
 import concurrent.futures
 import os
 import subprocess
+import time
 
 # Define the directory where .btor2 files are located
 directory = "/data/guangyuh/coding_env/eda_2_mc/xepic_testcase_for_participant/"
@@ -9,10 +10,11 @@ log_directory = "../log"
 # Ensure the log directory exists
 os.makedirs(log_directory, exist_ok=True)
 # Define the command to run
-command = "../core/target/x86_64-unknown-linux-musl/release/examples/cheetah"
+command = "../core/target/x86_64-unknown-linux-musl/release/examples/bmc"
 
 # Function to run the command for a single file
 def run_command(file_path):
+    start_time = time.time()  # Record the start time
     # Extract the base filename without the extension for the log file name
     base_name = os.path.basename(file_path)
     log_filename = os.path.splitext(base_name)[0] + ".log"
@@ -22,11 +24,13 @@ def run_command(file_path):
     full_command = f"{command} {file_path}"
     # Run the command and capture the output
     result = subprocess.run(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    end_time = time.time()  # Record the end time
+    duration = end_time - start_time  # Calculate the duration
     # Save the output to the log file in the log directory
     with open(full_log_path, 'wb') as log_file:
         log_file.write(result.stdout)
     # Return the result and the full path to the log file for further processing if needed
-    return result, full_log_path
+    return result, full_log_path, duration
 
 # Function to find all .btor2 files in the directory
 def find_btor2_files(directory):
@@ -42,18 +46,21 @@ def find_btor2_files(directory):
 def main():
     # Find all .btor2 files
     btor2_files = find_btor2_files(directory)
-    
+    total_time = 0  # Initialize a variable to keep track of the total time
     # Run the commands in parallel using a process pool
     with concurrent.futures.ProcessPoolExecutor(max_workers=64) as executor:
         # Map the run_command function to all the files
         results = list(executor.map(run_command, btor2_files))
         
         # Process the results
-        for result, full_log_path in results:
+        for result, full_log_path, duration in results:
+            total_time += duration  # Add the duration of each process to the total time
             if result.returncode == 0:
                 print(f"Command for {result.args} completed successfully. Output saved to {full_log_path}.")
             else:
                 print(f"Command for {result.args} failed with return code {result.returncode}. Check {full_log_path} for details.")
+    
+    print(f"Total time consumption: {total_time} seconds")  # Output the total time consumption
 
 if __name__ == "__main__":
     main()
