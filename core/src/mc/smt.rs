@@ -185,7 +185,7 @@ impl SmtModelChecker {
         let mut k: u64 = 0;
         'unroll_main: loop { // loop for unroll
             // checking progress and time consumptions for constriants checking 
-            println!("Checking bound {}, {} seconds in constriants contradictory checking, {} seconds in total", k, time_consumptions_assert_constraints_contradictory.iter().map(|t| t.as_secs()).sum::<u64>(), start_time.elapsed().as_secs());
+            //println!("Checking bound {}, {} seconds in constriants contradictory checking, {} seconds in total", k, time_consumptions_assert_constraints_contradictory.iter().map(|t| t.as_secs()).sum::<u64>(), start_time.elapsed().as_secs());
             let iteration_start_time = Instant::now();
             // print progress for every step
             //println!("Checking step {}/{}", k, k_max); // uncomment to see progress
