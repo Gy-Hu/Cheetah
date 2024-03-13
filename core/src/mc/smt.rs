@@ -94,7 +94,8 @@ impl SmtModelChecker {
         let sum_time: u64 = time_durations.iter().map(|t| t.as_secs()).sum();
         let avg_time: u64 = sum_time / time_durations.len() as u64; // Calculate average based on the sum
 
-        if  (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) {
+        //if  (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) { //exhauted mode
+        if  (sum_time > 30 * 60 && bound > 10) || (avg_time > 5 * 60 && bound > 5) { // aggressive mode
             false
         } else {
             true
@@ -116,9 +117,11 @@ impl SmtModelChecker {
 
         // average run time < 10 minutes, time sum < 2 hours, bound is > 2/3 k_max, and bound < 20, extend k_max
 
-        if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) {
+        //if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) { // exhauted mode
+        if (avg_time < 5 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 8) {  // aggressive mode
             true
-        } else if (avg_time < 2 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 200){
+        //} else if (avg_time < 2 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 200){ // exhauted mode
+        } else if (avg_time < 1 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 200){  // aggressive mode
             true
         }
         else {
@@ -170,7 +173,8 @@ impl SmtModelChecker {
         // Start the timer
         let start_time = Instant::now();
         // Define a duration of 3 hours
-        let timeout = Duration::from_secs(3 * 60 * 60);
+        //let timeout = Duration::from_secs(3 * 60 * 60); // exhauted mode
+        let timeout = Duration::from_secs(30 * 60); // aggressive mode
 
         // Print how many bad states we have
         //println!("Found {} bad states", bad_states.len()); // uncomment to see progress
