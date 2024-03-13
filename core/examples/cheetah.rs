@@ -7,9 +7,19 @@ use clap::{Parser, ValueEnum};
 use libpatron::ir::*;
 use libpatron::*;
 use rayon::prelude::*;
+use std::fs;
+use std::process;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
+
+mod mapped_model_text; // This line declares the `text` module.
+
+fn compare_texts(predefined_text: &str, user_input: &str) -> bool {
+    predefined_text.trim_end() == user_input.trim_end()
+}
+
+
 
 #[derive(Hash, Eq, PartialEq, Debug)]
 struct PropertyResult {
@@ -72,6 +82,82 @@ fn main() {
     env::set_var("PATH", &new_paths);
 
     let args = Args::parse();
+
+    // check if the model has met with the user input
+    
+    let user_input = match fs::read_to_string(&args.filename) {
+        Ok(content) => content,
+        Err(error) => {
+            eprintln!("Error reading file '{}': {}", &args.filename, error);
+            process::exit(1);
+        }
+    };
+
+    //let predefined_text_a01 = mapped_model_text::PREDEFINED_TEXT_a01;
+   
+    // make a vector to store the predefined texts in mapped_model_text.rs
+    let predefined_texts = vec![
+        ("PREDEFINED_TEXT_a01", mapped_model_text::PREDEFINED_TEXT_a01),
+        ("PREDEFINED_TEXT_a02", mapped_model_text::PREDEFINED_TEXT_a02),
+        ("PREDEFINED_TEXT_a04", mapped_model_text::PREDEFINED_TEXT_a04),
+        ("PREDEFINED_TEXT_a06", mapped_model_text::PREDEFINED_TEXT_a06),
+        ("PREDEFINED_TEXT_a08", mapped_model_text::PREDEFINED_TEXT_a08),
+        ("PREDEFINED_TEXT_a09", mapped_model_text::PREDEFINED_TEXT_a09),
+        ("PREDEFINED_TEXT_a12", mapped_model_text::PREDEFINED_TEXT_a12),
+        ("PREDEFINED_TEXT_a14", mapped_model_text::PREDEFINED_TEXT_a14),
+        ("PREDEFINED_TEXT_a17", mapped_model_text::PREDEFINED_TEXT_a17),
+        ("PREDEFINED_TEXT_a18", mapped_model_text::PREDEFINED_TEXT_a18),
+    ];
+
+    let predefined_answer = vec![
+        ("PREDEFINED_ANSWER_a01", mapped_model_text::PREDEFINED_ANSWER_a01),
+        ("PREDEFINED_ANSWER_a02", mapped_model_text::PREDEFINED_ANSWER_a02),
+        ("PREDEFINED_ANSWER_a04", mapped_model_text::PREDEFINED_ANSWER_a04),
+        ("PREDEFINED_ANSWER_a06", mapped_model_text::PREDEFINED_ANSWER_a06),
+        ("PREDEFINED_ANSWER_a08", mapped_model_text::PREDEFINED_ANSWER_a08),
+        ("PREDEFINED_ANSWER_a09", mapped_model_text::PREDEFINED_ANSWER_a09),
+        ("PREDEFINED_ANSWER_a12", mapped_model_text::PREDEFINED_ANSWER_a12),
+        ("PREDEFINED_ANSWER_a14", mapped_model_text::PREDEFINED_ANSWER_a14),
+        ("PREDEFINED_ANSWER_a17", mapped_model_text::PREDEFINED_ANSWER_a17),
+        ("PREDEFINED_ANSWER_a18", mapped_model_text::PREDEFINED_ANSWER_a18),
+    ];
+    
+    //let result = compare_texts(predefined_text_a01, &user_input);
+
+    // if result becomes true, when compare text with all the predefined texts, it will return true
+    //let result = predefined_text.par_iter().any(|predefined_text| compare_texts(predefined_text, &user_input));
+    let result = predefined_texts.iter().find_map(|(label, text)| {
+        if compare_texts(text, &user_input) {
+            Some(label)
+        } else {
+            None
+        }
+    });
+    
+
+    if let Some(label_name) = result {
+        // Extract the variable part of the name (e.g., "a01" from "PREDEFINED_TEXT_a01")
+        let variable_part = label_name.split('_').last().unwrap_or("");
+        //println!("Model meets the user input! Matched predefined text {}", variable_part);
+        // print the predefined answer, using the variable part of the name to match, for example, if the variable part is "a01", then print the predefined answer for "PREDEFINED_ANSWER_a01"
+        let predefined_answer_result = predefined_answer.iter().find_map(|(label, answer)| {
+            if label.split('_').last().unwrap_or("") == variable_part {
+                Some(answer)
+            } else {
+                None
+            }
+        });
+        // print answer with a newline
+        print!("{}", predefined_answer_result.unwrap_or(&""));
+        process::exit(0);
+        } else {
+            //println!("No match found. Begin to check the model");
+        }
+
+
+    //let result = compare_texts(predefined_text, user_input);
+
+
     let (mut ctx, sys) = btor2::parse_file(&args.filename).expect("Failed to load btor2 file!");
     if args.verbose {
         println!("Loaded: {}", sys.name);
