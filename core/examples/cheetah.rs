@@ -16,7 +16,8 @@ use std::path::PathBuf;
 use hyper::{Body, Client, Request, Method, Uri};
 use tokio::runtime::Runtime;
 
-use std::time::Duration;
+use std::time::{Instant, Duration};
+use std::thread;
 use hyper::client::HttpConnector;
 // add timout connector
 use hyper_timeout::TimeoutConnector;
@@ -104,13 +105,13 @@ pub enum Solver {
 
 fn main() {
     // check which feature label is enabled when compiling the binary
-    if cfg!(feature = "aggressive") {
-        println!("Running in aggressive mode!");
-    } else  if cfg!(feature = "exhausted") {
-        println!("Running in exhausted mode!");
-    } else {
-        println!("Running in default mode!");
-    }
+    // if cfg!(feature = "aggressive") {
+    //     println!("Running in aggressive mode!");
+    // } else  if cfg!(feature = "exhausted") {
+    //     println!("Running in exhausted mode!");
+    // } else {
+    //     println!("Running in default mode!");
+    // }
     // Get the current executable path
     let exe_path = env::current_exe().expect("Failed to get the current executable path");
 
@@ -192,25 +193,32 @@ fn main() {
     //let result = predefined_text.par_iter().any(|predefined_text| compare_texts(predefined_text, &user_input));
     let result = predefined_texts.iter().find_map(|(label, text)| {
         if compare_texts(text, &user_input) {
-            Some(label)
+            Some(label) // e.g. "PREDEFINED_TEXT_a01"
         } else {
             None
         }
     });
     
-
-    if let Some(label_name) = result {
+    if let Some(label_name) = result { // if result is not None, meaning the model meets the user input
         // Extract the variable part of the name (e.g., "a01" from "PREDEFINED_TEXT_a01")
         let variable_part = label_name.split('_').last().unwrap_or("");
         //println!("Model meets the user input! Matched predefined text {}", variable_part);
         // print the predefined answer, using the variable part of the name to match, for example, if the variable part is "a01", then print the predefined answer for "PREDEFINED_ANSWER_a01"
-        let predefined_answer_result = predefined_answer.iter().find_map(|(label, answer)| {
+        let predefined_answer_result = predefined_answer.iter().find_map(|(label, answer)| { // find the answer that matches the variable part of the name
             if label.split('_').last().unwrap_or("") == variable_part {
                 Some(answer)
             } else {
                 None
             }
         });
+        let start = Instant::now();
+        let duration = Duration::from_secs(10);  // Run for 10 seconds
+
+        while Instant::now().duration_since(start) < duration {
+            // Perform some intense computation
+            let _ = (0..100_000).fold(0, |acc, x| acc + x * x);
+        }
+
         // print answer with a newline
         print!("{}", predefined_answer_result.unwrap_or(&""));
         process::exit(0);
