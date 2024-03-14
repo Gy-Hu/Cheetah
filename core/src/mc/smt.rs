@@ -95,10 +95,41 @@ impl SmtModelChecker {
         let avg_time: u64 = sum_time / time_durations.len() as u64; // Calculate average based on the sum
 
         //if  (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) { //exhauted mode
-        if  (sum_time > 30 * 60 && bound > 10) || (avg_time > 5 * 60 && bound > 5) { // aggressive mode
-            false
-        } else {
-            true
+        // if  (sum_time > 30 * 60 && bound > 10) || (avg_time > 5 * 60 && bound > 5) { // aggressive mode
+        //     false
+        // } else {
+        //     true
+        // }
+
+        // let condition = if cfg!(feature = "exhausted") {
+        //     // Replace "another_feature" with "exhausted"
+        //     (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) // when condition met, return !(condition) -> !(true) -> false (final result) -> stop unrolling
+        // } else if cfg!(feature = "aggressive") {
+        //     (sum_time > 30 * 60 && bound > 10) || (avg_time > 5 * 60 && bound > 5) // when condition met, return !(condition) ->!(true) -> false (final result) -> stop unrolling
+        // } else {
+        //     (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) // default mode
+        // };
+
+        // !condition // return true if worth unrolling, false otherwise
+
+        if cfg!(feature = "exhausted"){
+            if (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) { // exhauted mode
+                false
+            } else {
+                true
+            }
+        } else if cfg!(feature = "aggressive"){
+            if (sum_time > 30 * 60 && bound > 10) || (avg_time > 5 * 60 && bound > 5) { // aggressive mode
+                false
+            } else {
+                true
+            }
+        } else { // default mode - exhauted mode
+            if (sum_time > 2 * 60 * 60 && bound > 10) || (avg_time > 30 * 60 && bound > 5) { // default mode
+                false
+            } else {
+                true
+            }
         }
     }
 
@@ -118,14 +149,36 @@ impl SmtModelChecker {
         // average run time < 10 minutes, time sum < 2 hours, bound is > 2/3 k_max, and bound < 20, extend k_max
 
         //if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) { // exhauted mode
-        if (avg_time < 5 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 8) {  // aggressive mode
-            true
-        //} else if (avg_time < 2 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 200){ // exhauted mode
-        } else if (avg_time < 1 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 200){  // aggressive mode
-            true
-        }
-        else {
-            false
+        // if (avg_time < 5 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 8) { // aggressive mode
+        //     true
+        // //} else if (avg_time < 2 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 200){ // exhauted mode
+        // } else if (avg_time < 1 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 200){ // aggressive mode
+        //     true
+        // }
+        // else {
+        //     false
+        // }
+
+        if cfg!(feature = "aggressive") {
+            // Aggressive mode conditions
+            if (avg_time < 5 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 8) {
+                true
+            } else if (avg_time < 1 * 60) && (sum_time < 20 * 60) && (bound > 2 * k_max / 3) && (bound < 200) {
+                true
+            } else {
+                false
+            }
+        } else if cfg!(feature = "exhausted") {
+            // Exhausted mode conditions
+            if (avg_time < 10 * 60) && (sum_time < 2 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 20) {
+                true
+            } else if (avg_time < 2 * 60) && (sum_time < 1 * 60 * 60) && (bound > 2 * k_max / 3) && (bound < 200) {
+                true
+            } else {
+                false
+            }
+        } else {
+            false // not extend k_max by default
         }
     }
 

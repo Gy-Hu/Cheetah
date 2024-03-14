@@ -40,3 +40,8 @@ insta.opt-level = 3
 
 [profile.release]
 debug = true
+
+[features]
+default = []
+exhausted = []
+aggressive = []
