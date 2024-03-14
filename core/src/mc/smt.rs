@@ -47,7 +47,8 @@ pub struct SmtSolverCmd {
 
 pub const BITWUZLA_CMD: SmtSolverCmd = SmtSolverCmd {
     name: "bitwuzla",
-    args: &["--smt2", "--incremental"],
+    //args: &["--smt2", "--incremental"],
+    args: &["--smt2", "--incremental", "--sat-engine=kissat"],
     supports_uf: false,
     supports_check_assuming: true,
 };

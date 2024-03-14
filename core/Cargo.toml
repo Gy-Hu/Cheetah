@@ -24,7 +24,8 @@ num-bigint = "0.4.4"
 num-traits = "0.2.17"
 num-integer = "0.1.45"
 # used for simulator initialization
-rand = { version = "0.8.5", default-features = false }
+#rand = { version = "0.8.5", default-features = false }
+rand = "0.8"
 rand_xoshiro = "0.6.0"
 smallvec = "1.11.2"
 hyper = "0.13"

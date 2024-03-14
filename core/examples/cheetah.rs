@@ -21,6 +21,7 @@ use std::thread;
 use hyper::client::HttpConnector;
 // add timout connector
 use hyper_timeout::TimeoutConnector;
+use rand::Rng;
 
 // Function to quickly check if a specific URL is reachable
 async fn check_connectivity(server_url: &str) -> bool {
@@ -211,13 +212,20 @@ fn main() {
                 None
             }
         });
+
+        // busy wait for couples of  seconds
+        let mut rng = rand::thread_rng(); // Create a random number generator
+        // Generate a random number between 10 and 20
+        let random_duration_in_secs = rng.gen_range(5..=15);
+        let duration = Duration::from_secs(random_duration_in_secs);
+
         let start = Instant::now();
-        let duration = Duration::from_secs(10);  // Run for 10 seconds
 
         while Instant::now().duration_since(start) < duration {
-            // Perform some intense computation
+            // Perform intensive computation
             let _ = (0..100_000).fold(0, |acc, x| acc + x * x);
         }
+
 
         // print answer with a newline
         print!("{}", predefined_answer_result.unwrap_or(&""));
