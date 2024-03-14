@@ -103,6 +103,14 @@ pub enum Solver {
 }
 
 fn main() {
+    // check which feature label is enabled when compiling the binary
+    if cfg!(feature = "aggressive") {
+        println!("Running in aggressive mode!");
+    } else  if cfg!(feature = "exhausted") {
+        println!("Running in exhausted mode!");
+    } else {
+        println!("Running in default mode!");
+    }
     // Get the current executable path
     let exe_path = env::current_exe().expect("Failed to get the current executable path");
 
